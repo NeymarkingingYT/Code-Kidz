@@ -211,3 +211,31 @@ function toggleTheme() {
   const isDark = document.getElementById('modeToggle').checked;
   document.body.className = isDark ? 'dark' : 'light';
 }
+
+let dragging = false;
+let offsetX = 0, offsetY = 0;
+
+canvas.addEventListener('mousedown', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const sprite = sprites[0];
+  if (x >= sprite.x - 10 && x <= sprite.x + 10 && y >= sprite.y - 10 && y <= sprite.y + 10) {
+    dragging = true;
+    offsetX = x - sprite.x;
+    offsetY = y - sprite.y;
+  }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (dragging) {
+    const rect = canvas.getBoundingClientRect();
+    sprites[0].x = e.clientX - rect.left - offsetX;
+    sprites[0].y = e.clientY - rect.top - offsetY;
+    drawSprites();
+  }
+});
+
+canvas.addEventListener('mouseup', () => {
+  dragging = false;
+});
