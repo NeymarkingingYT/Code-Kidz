@@ -145,6 +145,31 @@ document.getElementById('importInput').addEventListener('change', function(e) {
   reader.readAsText(file);
 });
 
+// Gallery
+function openGallery() {
+  fetch('gallery.json')
+    .then(res => res.json())
+    .then(projects => {
+      const list = projects.map(p =>
+        `<li><button onclick=\"loadSharedProject('${p.file}')\">${p.title} by ${p.author}</button></li>`
+      ).join('');
+      const html = `<ul>${list}</ul>`;
+      const w = window.open("", "_blank", "width=400,height=600");
+      w.document.write(`<h1>Project Gallery</h1>${html}`);
+    });
+}
+
+function loadSharedProject(fileUrl) {
+  fetch(fileUrl)
+    .then(res => res.text())
+    .then(xmlText => {
+      const xml = Blockly.Xml.textToDom(xmlText);
+      workspace.clear();
+      Blockly.Xml.domToWorkspace(xml, workspace);
+      alert("Project loaded from gallery!");
+    });
+}
+
 // Basic Blockly Blocks
 Blockly.defineBlocksWithJsonArray([
   {
@@ -207,19 +232,26 @@ Blockly.JavaScript['change_costume'] = function() {
 };
 Blockly.JavaScript['say_message'] = function(block) {
   const text = block.getFieldValue('TEXT');
-  return `alert("${text}");\n`;
+  return `alert(\"${text}\");\n`;
 };
 
-// Run
+// Run only from event_when_run blocks
 function runCode() {
   sprites = [{ x: 100, y: 100 }];
   clones = [];
-  const code = Blockly.JavaScript.workspaceToCode(workspace);
+
+  const topBlocks = workspace.getTopBlocks(true);
+  const codeBlocks = topBlocks
+    .filter(b => b.type === 'event_when_run')
+    .map(b => Blockly.JavaScript.blockToCode(b))
+    .join('\n');
+
   try {
-    eval(code);
+    eval(codeBlocks);
   } catch (e) {
     alert("Error: " + e.message);
   }
+
   drawSprites();
 }
 
