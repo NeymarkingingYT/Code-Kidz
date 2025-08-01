@@ -19,7 +19,7 @@
 
 ## 🌐 Try It Live
 
-👉 [https://yourusername.github.io/code-kidz](https://yourusername.github.io/code-kidz)  
+👉 [https://NeymarkingingYT.github.io/Code-Kidz](https://NeymarkingingYT.github.io/Code-Kidz)  
 *(Replace with your actual GitHub Pages URL)*
 
 ---
