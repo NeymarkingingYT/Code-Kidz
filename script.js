@@ -239,3 +239,61 @@ canvas.addEventListener('mousemove', (e) => {
 canvas.addEventListener('mouseup', () => {
   dragging = false;
 });
+
+let dragging = false;
+let offsetX = 0, offsetY = 0;
+
+canvas.addEventListener('mousedown', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const sprite = sprites[0];
+  if (x >= sprite.x - 10 && x <= sprite.x + 10 && y >= sprite.y - 10 && y <= sprite.y + 10) {
+    dragging = true;
+    offsetX = x - sprite.x;
+    offsetY = y - sprite.y;
+  }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (dragging) {
+    const rect = canvas.getBoundingClientRect();
+    sprites[0].x = e.clientX - rect.left - offsetX;
+    sprites[0].y = e.clientY - rect.top - offsetY;
+    drawSprites();
+  }
+});
+
+canvas.addEventListener('mouseup', () => {
+  dragging = false;
+});
+
+let spriteCostume = null;
+
+function uploadCostume() {
+  document.getElementById('costumeInput').click();
+}
+document.getElementById('costumeInput').addEventListener('change', (e) => {
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const img = new Image();
+    img.onload = function() {
+      spriteCostume = img;
+      drawSprites();
+    };
+    img.src = evt.target.result;
+  };
+  reader.readAsDataURL(e.target.files[0]);
+});
+
+function drawSprites() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  (sprites.concat(clones)).forEach(sprite => {
+    if (spriteCostume) {
+      ctx.drawImage(spriteCostume, sprite.x - 20, sprite.y - 20, 40, 40);
+    } else {
+      ctx.fillStyle = 'red';
+      ctx.fillRect(sprite.x - 10, sprite.y - 10, 20, 20);
+    }
+  });
+}
