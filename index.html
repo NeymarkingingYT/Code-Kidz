@@ -1,25 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8">
   <title>Code Kidz</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="icon" href="favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/blockly/blockly.min.js"></script>
-  <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="light">
   <header>
     <h1>🧱 Code Kidz</h1>
-    <div>
+    <div class="controls">
       <button onclick="runCode()">▶ Run</button>
       <button onclick="saveProject()">💾 Save</button>
       <button onclick="loadProject()">📂 Load</button>
+      <label class="theme-switch">
+        🌗 <input type="checkbox" id="modeToggle"> Dark Mode
+      </label>
     </div>
   </header>
 
   <main>
     <div id="stageContainer">
       <canvas id="stage" width="480" height="360"></canvas>
+      <input type="file" id="backdropInput" accept="image/*" hidden>
+      <button onclick="uploadBackdrop()">🎨 Upload Backdrop</button>
+      <input type="file" id="soundInput" accept="audio/*" hidden>
+      <button onclick="uploadSound()">🔊 Upload Sound</button>
     </div>
     <div id="blocklyDiv"></div>
   </main>
@@ -33,7 +41,6 @@
     <category name="Motion" colour="210">
       <block type="move_steps"></block>
       <block type="go_to_xy"></block>
-      <block type="turn_right"></block>
     </category>
     <category name="Looks" colour="160">
       <block type="change_costume"></block>
@@ -42,11 +49,7 @@
       <block type="sound_play"></block>
     </category>
     <category name="Control" colour="120">
-      <block type="controls_repeat_ext"></block>
-    </category>
-    <category name="Operators" colour="230">
-      <block type="math_number"></block>
-      <block type="math_arithmetic"></block>
+      <block type="create_clone"></block>
     </category>
     <category name="Custom" colour="60">
       <block type="say_message"></block>
