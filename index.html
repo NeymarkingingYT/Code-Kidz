@@ -15,6 +15,9 @@
       <button onclick="runCode()">▶ Run</button>
       <button onclick="saveProject()">💾 Save</button>
       <button onclick="loadProject()">📂 Load</button>
+      <button onclick="downloadProject()">⬇ Export</button>
+<input type="file" id="importInput" hidden>
+<button onclick="document.getElementById('importInput').click()">⬆ Import</button>
       <label class="theme-switch">
         🌗 <input type="checkbox" id="modeToggle" onchange="toggleTheme()">
       </label>
@@ -26,6 +29,8 @@
       <canvas id="stage" width="480" height="360"></canvas>
       <input type="file" id="backdropInput" accept="image/*" hidden>
       <button onclick="uploadBackdrop()">🎨 Upload Backdrop</button>
+      <input type="file" id="costumeInput" accept="image/*" hidden>
+<button onclick="uploadCostume()">🧥 Upload Costume</button>
       <input type="file" id="soundInput" accept="audio/*" hidden>
       <button onclick="uploadSound()">🔊 Upload Sound</button>
     </div>
