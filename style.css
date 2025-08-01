@@ -17,46 +17,9 @@ header h1 {
   font-size: 1.4rem;
 }
 
-.controls button {
-  margin-right: 6px;
-  padding: 6px 12px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  background: #007acc;
-  color: white;
-  border: none;
-  border-radius: 4px;
-}
-
-.controls button:hover {
-  background: #005fa3;
-}
-
-.controls label {
-  margin-left: 10px;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
 main {
   display: flex;
   height: calc(100vh - 60px);
-}
-
-#stageContainer {
-  width: 500px;
-  background: #eee;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-#stage {
-  border: 2px solid #ccc;
-  background: white;
-  margin-bottom: 10px;
-  width: 100%;
 }
 
 #blocklyDiv {
@@ -64,7 +27,86 @@ main {
   height: 100%;
 }
 
-/* Light Theme */
+#stage {
+  width: 480px;
+  height: 360px;
+  border: 2px solid #ccc;
+  background: white;
+  margin: 10px;
+}
+
+aside {
+  position: fixed;
+  top: 60px;
+  right: 0;
+  background: #f0f0f0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+button, label.custom-button {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: #007acc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  text-align: center;
+}
+
+button:hover, label.custom-button:hover {
+  background: #005fa3;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Light theme */
 body.light {
   background: white;
   color: black;
@@ -72,11 +114,11 @@ body.light {
 body.light header {
   background: #f5f5f5;
 }
-body.light #stageContainer {
-  background: #eee;
+body.light aside {
+  background: #f0f0f0;
 }
 
-/* Dark Theme */
+/* Dark theme */
 body.dark {
   background: #181818;
   color: white;
@@ -84,13 +126,13 @@ body.dark {
 body.dark header {
   background: #222;
 }
-body.dark .controls button {
+body.dark aside {
+  background: #2c2c2c;
+}
+body.dark button, body.dark label.custom-button {
   background: #444;
   color: white;
 }
-body.dark .controls button:hover {
+body.dark button:hover, body.dark label.custom-button:hover {
   background: #666;
-}
-body.dark #stageContainer {
-  background: #2b2b2b;
 }
