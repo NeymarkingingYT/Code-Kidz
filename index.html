@@ -1,29 +1,38 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Code Kidz Engine</title>
-    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <h1>Code Kidz</h1>
-    <div id="blocklyDiv" style="height: 480px; width: 100%;"></div>
+<head>
+  <meta charset="utf-8">
+  <title>Code Kidz</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: sans-serif;
+    }
+    #blocklyDiv {
+      height: 80vh;
+      width: 100%;
+    }
+    #controls {
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align:center;">Code Kidz</h1>
+  <div id="controls">
+    <button onclick="runCode()">Run</button>
+  </div>
+  <div id="blocklyDiv"></div>
 
-    <xml id="toolbox" style="display: none">
-      <category name="Events" colour="120">
-        <block type="when_run"></block>
-      </category>
-      <category name="Motion" colour="210">
-        <block type="move_steps"></block>
-        <block type="turn_right"></block>
-      </category>
-      <category name="Control" colour="240">
-        <block type="controls_repeat_ext"></block>
-        <block type="controls_if"></block>
-      </category>
-    </xml>
+  <xml id="toolbox" style="display: none">
+    <block type="say_message"></block>
+    <block type="controls_repeat_ext"></block>
+    <block type="math_number"></block>
+  </xml>
 
-    <script src="script.js"></script>
-  </body>
+  <script src="script.js"></script>
+</body>
 </html>
