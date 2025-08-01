@@ -1,15 +1,14 @@
-body {
-  font-family: sans-serif;
+html, body {
+  height: 100%;
   margin: 0;
-  padding: 0;
-  background: #f0f0f0;
+  font-family: sans-serif;
 }
-h1 {
-  text-align: center;
-  padding: 10px;
-}
+
 #blocklyDiv {
-  margin: auto;
-  border: 2px solid #ccc;
-  background: white;
+  height: 80vh;
+  width: 100%;
+}
+
+#controls {
+  padding: 10px;
 }
