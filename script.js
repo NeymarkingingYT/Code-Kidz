@@ -1,149 +1,139 @@
-let workspace = Blockly.inject('blocklyDiv', {
-  toolbox: document.getElementById('toolbox')
+// === Blockly Injection ===
+const workspace = Blockly.inject('blocklyDiv', {
+  toolbox: document.getElementById('toolbox'),
+  grid: { spacing: 20, length: 3, colour: '#ccc', snap: true },
+  trashcan: true
 });
 
-const canvas = document.getElementById('stage');
-const ctx = canvas.getContext('2d');
+// === Theme Switching ===
+document.getElementById("modeToggle").addEventListener("change", e => {
+  document.body.className = e.target.checked ? "dark" : "light";
+});
 
-// === SPRITE ENGINE ===
-let sprites = [
-  { id: "Sprite1", x: 100, y: 100, costume: "blue", scripts: [], events: {} }
-];
-let broadcastQueue = [];
+// === Stage and Sprites ===
+const canvas = document.getElementById("stage");
+const ctx = canvas.getContext("2d");
+let backdrop = null;
+let sprites = [{ id: 0, x: 240, y: 180, costume: "🧍", clones: [] }];
 
-function drawSprites() {
+function drawStage() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  sprites.forEach(sprite => {
-    ctx.fillStyle = sprite.costume;
-    ctx.fillRect(sprite.x, sprite.y, 40, 40);
-  });
+  if (backdrop) ctx.drawImage(backdrop, 0, 0, canvas.width, canvas.height);
+  for (const s of [sprites[0], ...sprites[0].clones]) {
+    ctx.font = "32px serif";
+    ctx.fillText(s.costume, s.x, s.y);
+  }
 }
 
-setInterval(drawSprites, 100);
-
-// === BLOCK DEFINITIONS ===
+// === Blocks ===
 Blockly.defineBlocksWithJsonArray([
   {
-    "type": "event_when_run",
-    "message0": "when run",
-    "nextStatement": null,
-    "colour": 20
+    type: "event_when_run",
+    message0: "when run",
+    nextStatement: null,
+    colour: 20
   },
   {
-    "type": "event_broadcast",
-    "message0": "broadcast %1",
-    "args0": [{ "type": "field_input", "name": "MSG", "text": "message" }],
-    "previousStatement": null,
-    "nextStatement": null,
-    "colour": 20
+    type: "move_steps",
+    message0: "move %1 steps",
+    args0: [{ type: "field_number", name: "STEPS", value: 10 }],
+    previousStatement: null, nextStatement: null,
+    colour: 210
   },
   {
-    "type": "event_when_receive",
-    "message0": "when I receive %1",
-    "args0": [{ "type": "field_input", "name": "MSG", "text": "message" }],
-    "nextStatement": null,
-    "colour": 20
-  },
-  {
-    "type": "move_steps",
-    "message0": "move %1 steps",
-    "args0": [{ "type": "field_number", "name": "STEPS", "value": 10 }],
-    "previousStatement": null,
-    "nextStatement": null,
-    "colour": 210
-  },
-  {
-    "type": "go_to_xy",
-    "message0": "go to x: %1 y: %2",
-    "args0": [
-      { "type": "field_number", "name": "X", "value": 0 },
-      { "type": "field_number", "name": "Y", "value": 0 }
+    type: "go_to_xy",
+    message0: "go to x: %1 y: %2",
+    args0: [
+      { type: "field_number", name: "X", value: 0 },
+      { type: "field_number", name: "Y", value: 0 }
     ],
-    "previousStatement": null,
-    "nextStatement": null,
-    "colour": 210
+    previousStatement: null, nextStatement: null,
+    colour: 210
   },
   {
-    "type": "turn_right",
-    "message0": "turn right %1 degrees (visual only)",
-    "args0": [{ "type": "field_angle", "name": "ANGLE", "angle": 90 }],
-    "previousStatement": null,
-    "nextStatement": null,
-    "colour": 210
+    type: "change_costume",
+    message0: "switch costume to %1",
+    args0: [{ type: "field_input", name: "LOOK", text: "🐱" }],
+    previousStatement: null, nextStatement: null,
+    colour: 160
   },
   {
-    "type": "change_costume",
-    "message0": "switch costume to %1",
-    "args0": [{ "type": "field_input", "name": "COSTUME", "text": "red" }],
-    "previousStatement": null,
-    "nextStatement": null,
-    "colour": 160
+    type: "sound_play",
+    message0: "play sound",
+    previousStatement: null, nextStatement: null,
+    colour: 300
   },
   {
-    "type": "sound_play",
-    "message0": "play sound %1",
-    "args0": [{ "type": "field_input", "name": "SOUND", "text": "Beep" }],
-    "previousStatement": null,
-    "nextStatement": null,
-    "colour": 300
+    type: "create_clone",
+    message0: "create clone of myself",
+    previousStatement: null, nextStatement: null,
+    colour: 120
   },
   {
-    "type": "say_message",
-    "message0": "say %1",
-    "args0": [{ "type": "field_input", "name": "TEXT", "text": "Hello!" }],
-    "previousStatement": null,
-    "nextStatement": null,
-    "colour": 60
+    type: "say_message",
+    message0: "say %1",
+    args0: [{ type: "field_input", name: "TEXT", text: "Hello!" }],
+    previousStatement: null, nextStatement: null,
+    colour: 60
   }
 ]);
 
-// === GENERATORS ===
-Blockly.JavaScript['event_when_run'] = block => 'START\n';
-Blockly.JavaScript['event_broadcast'] = block => `broadcast("${block.getFieldValue('MSG')}");\n`;
-Blockly.JavaScript['event_when_receive'] = block => `RECEIVE:${block.getFieldValue('MSG')}\n`;
-Blockly.JavaScript['move_steps'] = block => `sprite.x += ${block.getFieldValue('STEPS')};\n`;
-Blockly.JavaScript['go_to_xy'] = block => `sprite.x = ${block.getFieldValue('X')}; sprite.y = ${block.getFieldValue('Y')};\n`;
-Blockly.JavaScript['turn_right'] = () => `/* visual only */\n`;
-Blockly.JavaScript['change_costume'] = block => `sprite.costume = "${block.getFieldValue('COSTUME')}";\n`;
-Blockly.JavaScript['sound_play'] = block => `console.log("Play sound: ${block.getFieldValue('SOUND')}");\n`;
-Blockly.JavaScript['say_message'] = block => `alert("${block.getFieldValue('TEXT')}");\n`;
+// === Generators ===
+Blockly.JavaScript['event_when_run'] = () => '';
+Blockly.JavaScript['move_steps'] = b => `sprite.x += ${b.getFieldValue('STEPS')}; drawStage();\n`;
+Blockly.JavaScript['go_to_xy'] = b => `sprite.x = ${b.getFieldValue('X')}; sprite.y = ${b.getFieldValue('Y')}; drawStage();\n`;
+Blockly.JavaScript['change_costume'] = b => `sprite.costume = "${b.getFieldValue('LOOK')}"; drawStage();\n`;
+Blockly.JavaScript['sound_play'] = () => `if(sound) sound.play();\n`;
+Blockly.JavaScript['create_clone'] = () => `sprite.clones.push({ ...sprite }); drawStage();\n`;
+Blockly.JavaScript['say_message'] = b => `alert("${b.getFieldValue('TEXT')}");\n`;
 
-// === RUN ENGINE ===
+// === Run Button ===
 function runCode() {
-  const code = Blockly.JavaScript.workspaceToCode(workspace).split('\n');
-  sprites.forEach(sprite => {
-    sprite.scripts = [];
-    let active = false;
-    for (let line of code) {
-      if (line === 'START') active = true;
-      else if (line.startsWith('RECEIVE:')) sprite.events[line.slice(8)] = [];
-      else if (active) sprite.scripts.push(line);
-    }
-    sprite.scripts.forEach(line => eval(line));
-  });
+  const code = Blockly.JavaScript.workspaceToCode(workspace);
+  window.sprite = sprites[0];
+  try {
+    new Function(code)();
+  } catch (e) {
+    alert("Error: " + e);
+  }
 }
 
-function broadcast(msg) {
-  sprites.forEach(sprite => {
-    const lines = sprite.events[msg];
-    if (lines) lines.forEach(code => eval(code));
-  });
+// === Backdrop Upload ===
+function uploadBackdrop() {
+  document.getElementById("backdropInput").click();
 }
+document.getElementById("backdropInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  const img = new Image();
+  img.onload = () => { backdrop = img; drawStage(); };
+  img.src = URL.createObjectURL(file);
+});
 
-// === SAVE/LOAD ===
+// === Sound Upload ===
+let sound = null;
+function uploadSound() {
+  document.getElementById("soundInput").click();
+}
+document.getElementById("soundInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  sound = new Audio(URL.createObjectURL(file));
+});
+
+// === Save / Load ===
 function saveProject() {
   const xml = Blockly.Xml.workspaceToDom(workspace);
-  const data = Blockly.Xml.domToText(xml);
-  localStorage.setItem("codekidz_project", data);
+  const data = Blockly.Xml.domToPrettyText(xml);
+  localStorage.setItem("codekidz", data);
   alert("Project saved!");
 }
 
 function loadProject() {
-  const data = localStorage.getItem("codekidz_project");
+  const data = localStorage.getItem("codekidz");
   if (data) {
-    Blockly.Xml.clearWorkspaceAndLoadFromXml(Blockly.Xml.textToDom(data), workspace);
-    alert("Project loaded!");
-  } else {
-    alert("No project found.");
-  }
+    workspace.clear();
+    Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(data), workspace);
+  } else alert("No saved project found.");
 }
+
+// === Initial Draw ===
+drawStage();
