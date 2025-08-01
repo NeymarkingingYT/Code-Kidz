@@ -1,139 +1,208 @@
-// === Blockly Injection ===
-const workspace = Blockly.inject('blocklyDiv', {
+let workspace = Blockly.inject('blocklyDiv', {
   toolbox: document.getElementById('toolbox'),
-  grid: { spacing: 20, length: 3, colour: '#ccc', snap: true },
-  trashcan: true
+  scrollbars: true
 });
 
-// === Theme Switching ===
-document.getElementById("modeToggle").addEventListener("change", e => {
-  document.body.className = e.target.checked ? "dark" : "light";
-});
+const canvas = document.getElementById('stage');
+const ctx = canvas.getContext('2d');
 
-// === Stage and Sprites ===
-const canvas = document.getElementById("stage");
-const ctx = canvas.getContext("2d");
-let backdrop = null;
-let sprites = [{ id: 0, x: 240, y: 180, costume: "🧍", clones: [] }];
+let sprites = [{ x: 240, y: 180 }];
+let clones = [];
+let sounds = {};
+let broadcasts = {};
+let darkMode = false;
 
-function drawStage() {
+function drawSprites() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (backdrop) ctx.drawImage(backdrop, 0, 0, canvas.width, canvas.height);
-  for (const s of [sprites[0], ...sprites[0].clones]) {
-    ctx.font = "32px serif";
-    ctx.fillText(s.costume, s.x, s.y);
-  }
+  sprites.concat(clones).forEach(sprite => {
+    ctx.fillStyle = 'red';
+    ctx.fillRect(sprite.x - 10, sprite.y - 10, 20, 20);
+  });
 }
 
-// === Blocks ===
-Blockly.defineBlocksWithJsonArray([
-  {
-    type: "event_when_run",
-    message0: "when run",
-    nextStatement: null,
-    colour: 20
-  },
-  {
-    type: "move_steps",
-    message0: "move %1 steps",
-    args0: [{ type: "field_number", name: "STEPS", value: 10 }],
-    previousStatement: null, nextStatement: null,
-    colour: 210
-  },
-  {
-    type: "go_to_xy",
-    message0: "go to x: %1 y: %2",
-    args0: [
-      { type: "field_number", name: "X", value: 0 },
-      { type: "field_number", name: "Y", value: 0 }
-    ],
-    previousStatement: null, nextStatement: null,
-    colour: 210
-  },
-  {
-    type: "change_costume",
-    message0: "switch costume to %1",
-    args0: [{ type: "field_input", name: "LOOK", text: "🐱" }],
-    previousStatement: null, nextStatement: null,
-    colour: 160
-  },
-  {
-    type: "sound_play",
-    message0: "play sound",
-    previousStatement: null, nextStatement: null,
-    colour: 300
-  },
-  {
-    type: "create_clone",
-    message0: "create clone of myself",
-    previousStatement: null, nextStatement: null,
-    colour: 120
-  },
-  {
-    type: "say_message",
-    message0: "say %1",
-    args0: [{ type: "field_input", name: "TEXT", text: "Hello!" }],
-    previousStatement: null, nextStatement: null,
-    colour: 60
-  }
-]);
-
-// === Generators ===
-Blockly.JavaScript['event_when_run'] = () => '';
-Blockly.JavaScript['move_steps'] = b => `sprite.x += ${b.getFieldValue('STEPS')}; drawStage();\n`;
-Blockly.JavaScript['go_to_xy'] = b => `sprite.x = ${b.getFieldValue('X')}; sprite.y = ${b.getFieldValue('Y')}; drawStage();\n`;
-Blockly.JavaScript['change_costume'] = b => `sprite.costume = "${b.getFieldValue('LOOK')}"; drawStage();\n`;
-Blockly.JavaScript['sound_play'] = () => `if(sound) sound.play();\n`;
-Blockly.JavaScript['create_clone'] = () => `sprite.clones.push({ ...sprite }); drawStage();\n`;
-Blockly.JavaScript['say_message'] = b => `alert("${b.getFieldValue('TEXT')}");\n`;
-
-// === Run Button ===
 function runCode() {
-  const code = Blockly.JavaScript.workspaceToCode(workspace);
-  window.sprite = sprites[0];
+  clones = [];
+  broadcasts = {};
   try {
-    new Function(code)();
+    const code = Blockly.JavaScript.workspaceToCode(workspace);
+    eval(code);
+    drawSprites();
   } catch (e) {
-    alert("Error: " + e);
+    alert('Error: ' + e.message);
   }
 }
 
-// === Backdrop Upload ===
+// --- Custom Blockly Blocks ---
+
+Blockly.Blocks['event_when_run'] = {
+  init: function() {
+    this.appendDummyInput().appendField("when run");
+    this.appendStatementInput("DO").setCheck(null);
+    this.setColour(20);
+    this.setTooltip("Run this when play is clicked.");
+  }
+};
+
+Blockly.JavaScript['event_when_run'] = function(block) {
+  return Blockly.JavaScript.statementToCode(block, 'DO');
+};
+
+Blockly.Blocks['move_steps'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField("move")
+      .appendField(new Blockly.FieldNumber(10), "STEPS")
+      .appendField("steps");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(210);
+  }
+};
+
+Blockly.JavaScript['move_steps'] = function(block) {
+  const steps = block.getFieldValue('STEPS');
+  return `sprites[0].x += ${steps}; drawSprites();\n`;
+};
+
+Blockly.Blocks['go_to_xy'] = {
+  init: function() {
+    this.appendDummyInput()
+      .appendField("go to x:")
+      .appendField(new Blockly.FieldNumber(0), "X")
+      .appendField("y:")
+      .appendField(new Blockly.FieldNumber(0), "Y");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(210);
+  }
+};
+
+Blockly.JavaScript['go_to_xy'] = function(block) {
+  const x = block.getFieldValue('X');
+  const y = block.getFieldValue('Y');
+  return `sprites[0].x = ${x}; sprites[0].y = ${y}; drawSprites();\n`;
+};
+
+Blockly.Blocks['sound_play'] = {
+  init: function() {
+    this.appendDummyInput().appendField("play sound").appendField(new Blockly.FieldTextInput("sound.mp3"), "SRC");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(300);
+  }
+};
+
+Blockly.JavaScript['sound_play'] = function(block) {
+  const src = block.getFieldValue('SRC');
+  return `new Audio('${src}').play();\n`;
+};
+
+Blockly.Blocks['change_costume'] = {
+  init: function() {
+    this.appendDummyInput().appendField("change costume to").appendField(new Blockly.FieldTextInput("costume.png"), "COSTUME");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(160);
+  }
+};
+
+Blockly.JavaScript['change_costume'] = function(block) {
+  const costume = block.getFieldValue('COSTUME');
+  return `/* Costume change: ${costume} */\n`;
+};
+
+Blockly.Blocks['create_clone'] = {
+  init: function() {
+    this.appendDummyInput().appendField("create clone");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(120);
+  }
+};
+
+Blockly.JavaScript['create_clone'] = function() {
+  return `clones.push({...sprites[0]}); drawSprites();\n`;
+};
+
+Blockly.Blocks['say_message'] = {
+  init: function() {
+    this.appendDummyInput().appendField("say").appendField(new Blockly.FieldTextInput("Hello!"), "MSG");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(60);
+  }
+};
+
+Blockly.JavaScript['say_message'] = function(block) {
+  const msg = block.getFieldValue('MSG');
+  return `alert("${msg}");\n`;
+};
+
+Blockly.Blocks['event_broadcast'] = {
+  init: function() {
+    this.appendDummyInput().appendField("broadcast").appendField(new Blockly.FieldTextInput("message"), "MSG");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(20);
+  }
+};
+
+Blockly.JavaScript['event_broadcast'] = function(block) {
+  const msg = block.getFieldValue('MSG');
+  return `broadcasts["${msg}"] = true;\n`;
+};
+
+Blockly.Blocks['event_when_receive'] = {
+  init: function() {
+    this.appendDummyInput().appendField("when I receive").appendField(new Blockly.FieldTextInput("message"), "MSG");
+    this.appendStatementInput("DO").setCheck(null);
+    this.setColour(20);
+  }
+};
+
+Blockly.JavaScript['event_when_receive'] = function(block) {
+  const msg = block.getFieldValue('MSG');
+  const code = Blockly.JavaScript.statementToCode(block, 'DO');
+  return `if (broadcasts["${msg}"]) {\n${code}}\n`;
+};
+
+// --- Theme Toggle ---
+document.getElementById('modeToggle').addEventListener('change', (e) => {
+  document.body.className = e.target.checked ? 'dark' : 'light';
+});
+
+// --- Upload ---
 function uploadBackdrop() {
-  document.getElementById("backdropInput").click();
+  document.getElementById('backdropInput').click();
 }
-document.getElementById("backdropInput").addEventListener("change", e => {
-  const file = e.target.files[0];
-  const img = new Image();
-  img.onload = () => { backdrop = img; drawStage(); };
-  img.src = URL.createObjectURL(file);
+document.getElementById('backdropInput').addEventListener('change', (e) => {
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const img = new Image();
+    img.onload = function() {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      drawSprites();
+    };
+    img.src = evt.target.result;
+  };
+  reader.readAsDataURL(e.target.files[0]);
 });
 
-// === Sound Upload ===
-let sound = null;
 function uploadSound() {
-  document.getElementById("soundInput").click();
+  document.getElementById('soundInput').click();
 }
-document.getElementById("soundInput").addEventListener("change", e => {
-  const file = e.target.files[0];
-  sound = new Audio(URL.createObjectURL(file));
-});
 
-// === Save / Load ===
 function saveProject() {
   const xml = Blockly.Xml.workspaceToDom(workspace);
-  const data = Blockly.Xml.domToPrettyText(xml);
-  localStorage.setItem("codekidz", data);
+  const xmlText = Blockly.Xml.domToText(xml);
+  localStorage.setItem("codekidz_project", xmlText);
   alert("Project saved!");
 }
 
 function loadProject() {
-  const data = localStorage.getItem("codekidz");
-  if (data) {
-    workspace.clear();
-    Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(data), workspace);
-  } else alert("No saved project found.");
+  const xmlText = localStorage.getItem("codekidz_project");
+  if (!xmlText) return alert("No project saved.");
+  const xml = Blockly.Xml.textToDom(xmlText);
+  Blockly.Xml.domToWorkspace(xml, workspace);
+  alert("Project loaded!");
 }
-
-// === Initial Draw ===
-drawStage();
