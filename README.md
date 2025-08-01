@@ -20,10 +20,8 @@
 ## 🌐 Try It Live
 
 👉 [https://NeymarkingingYT.github.io/Code-Kidz](https://NeymarkingingYT.github.io/Code-Kidz)  
-*(Replace with your actual GitHub Pages URL)*
 
 ---
 
-## 📁 Project Structure
 
 
