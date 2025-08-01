@@ -5,29 +5,37 @@ body {
 }
 
 header {
-  background: #f0f0f0;
-  padding: 10px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  background: #f5f5f5;
+  padding: 10px 20px;
 }
 
 header h1 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 
 .controls button {
-  margin: 0 5px;
+  margin-right: 6px;
   padding: 6px 12px;
   font-size: 0.9rem;
   cursor: pointer;
+  background: #007acc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.controls button:hover {
+  background: #005fa3;
 }
 
 .controls label {
   margin-left: 10px;
-  cursor: pointer;
   font-size: 0.9rem;
+  cursor: pointer;
 }
 
 main {
@@ -38,16 +46,17 @@ main {
 #stageContainer {
   width: 500px;
   background: #eee;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
 }
 
 #stage {
   border: 2px solid #ccc;
   background: white;
   margin-bottom: 10px;
+  width: 100%;
 }
 
 #blocklyDiv {
@@ -61,7 +70,7 @@ body.light {
   color: black;
 }
 body.light header {
-  background: #f0f0f0;
+  background: #f5f5f5;
 }
 body.light #stageContainer {
   background: #eee;
@@ -69,16 +78,19 @@ body.light #stageContainer {
 
 /* Dark Theme */
 body.dark {
-  background: #222;
-  color: #f0f0f0;
+  background: #181818;
+  color: white;
 }
 body.dark header {
-  background: #333;
+  background: #222;
 }
 body.dark .controls button {
   background: #444;
   color: white;
 }
+body.dark .controls button:hover {
+  background: #666;
+}
 body.dark #stageContainer {
-  background: #444;
+  background: #2b2b2b;
 }
