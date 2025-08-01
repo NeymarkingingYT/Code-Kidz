@@ -206,3 +206,8 @@ function loadProject() {
   Blockly.Xml.domToWorkspace(xml, workspace);
   alert("Project loaded!");
 }
+
+function toggleTheme() {
+  const isDark = document.getElementById('modeToggle').checked;
+  document.body.className = isDark ? 'dark' : 'light';
+}
