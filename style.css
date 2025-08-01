@@ -136,3 +136,39 @@ body.dark button, body.dark label.custom-button {
 body.dark button:hover, body.dark label.custom-button:hover {
   background: #666;
 }
+
+/* Gallery preview thumbnails */
+.gallery-item {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  margin: 10px;
+  text-align: center;
+  background: white;
+  transition: box-shadow 0.2s ease-in-out;
+}
+.gallery-item:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.gallery-item img {
+  width: 160px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.gallery-item h3 {
+  margin: 8px 0 4px 0;
+}
+.gallery-item p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #444;
+}
+body.dark .gallery-item {
+  background: #2a2a2a;
+  color: white;
+  border: 1px solid #555;
+}
+body.dark .gallery-item p {
+  color: #ccc;
+}
