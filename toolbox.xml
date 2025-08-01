@@ -1,0 +1,81 @@
+<xml id="toolbox" style="display: none">
+  <category name="Events" colour="#FFD500">
+    <block type="event_when_run"></block>
+    <block type="event_when_key_pressed"></block>
+    <block type="event_when_sprite_clicked"></block>
+  </category>
+
+  <category name="Motion" colour="#4C97FF">
+    <block type="move_steps"></block>
+    <block type="turn_right"></block>
+    <block type="turn_left"></block>
+    <block type="go_to"></block>
+    <block type="glide_to"></block>
+    <block type="point_towards"></block>
+    <block type="set_x_y"></block>
+    <block type="change_x_by"></block>
+    <block type="change_y_by"></block>
+  </category>
+
+  <category name="Looks" colour="#9966FF">
+    <block type="say_message"></block>
+    <block type="change_costume"></block>
+    <block type="change_backdrop"></block>
+    <block type="show"></block>
+    <block type="hide"></block>
+    <block type="set_effect"></block>
+    <block type="clear_effects"></block>
+  </category>
+
+  <category name="Sound" colour="#D65CD6">
+    <block type="play_sound"></block>
+    <block type="stop_all_sounds"></block>
+    <block type="change_volume_by"></block>
+    <block type="set_volume_to"></block>
+  </category>
+
+  <category name="Control" colour="#FFAB19">
+    <block type="control_wait"></block>
+    <block type="controls_repeat_ext"></block>
+    <block type="controls_whileUntil"></block>
+    <block type="controls_if"></block>
+    <block type="controls_ifelse"></block>
+    <block type="control_forever"></block>
+    <block type="control_stop"></block>
+  </category>
+
+  <category name="Sensing" colour="#5CB1D6">
+    <block type="sensing_touching_object"></block>
+    <block type="sensing_key_pressed"></block>
+    <block type="sensing_mouse_down"></block>
+    <block type="sensing_distance_to"></block>
+    <block type="sensing_timer"></block>
+    <block type="sensing_current_time"></block>
+  </category>
+
+  <category name="Operators" colour="#40BF4A">
+    <block type="math_number"></block>
+    <block type="math_arithmetic"></block>
+    <block type="logic_compare"></block>
+    <block type="logic_operation"></block>
+    <block type="logic_negate"></block>
+    <block type="math_random_int"></block>
+    <block type="math_modulo"></block>
+    <block type="math_round"></block>
+    <block type="text"></block>
+    <block type="text_join"></block>
+  </category>
+
+  <category name="Variables" colour="#FF8C1A" custom="VARIABLE"></category>
+
+  <category name="Sprite" colour="#FF6680">
+    <block type="sprite_go_to"></block>
+    <block type="sprite_hide_show_toggle"></block>
+    <block type="sprite_next_costume"></block>
+    <block type="sprite_set_costume"></block>
+    <block type="sprite_clone"></block>
+    <block type="sprite_delete_clone"></block>
+  </category>
+
+  <category name="Pen" colour="#00B295">
+    <block type="pen_clear"></block>_
