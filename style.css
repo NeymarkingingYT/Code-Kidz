@@ -1,14 +1,38 @@
-html, body {
-  height: 100%;
+body {
   margin: 0;
-  font-family: sans-serif;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f8f8f8;
+}
+
+header {
+  background: #222;
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+button {
+  padding: 8px 16px;
+  font-size: 16px;
+  background: #28a745;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+main {
+  height: calc(100vh - 60px);
 }
 
 #blocklyDiv {
-  height: 80vh;
+  height: 100%;
   width: 100%;
-}
-
-#controls {
-  padding: 10px;
 }
